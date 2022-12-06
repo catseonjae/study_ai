@@ -48,6 +48,15 @@ class matrix{
     }
 };
 
+class layer
+class network{
+  public:
+    vector<matrix> w;
+    
+    network(){
+      
+    }
+}
 
 int main() {
 
