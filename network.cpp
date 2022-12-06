@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-
+const double EPSILON=1e-9;
 double random_number(double s, double e){
   const double RANDMAX=32767;
   double r=e-s;
@@ -49,7 +49,7 @@ class matrix{
       for(int i=0;i<rows;i++){
         for(int j=0;j<a.columns;j++){
           for(int k=0;k<columns;k++){
-            ret[i][j]=ret[i][j]+this[i][k]*a[k][j];
+            ret[i][j]=ret[i][j]+(*this)[i][k]*a[k][j];
           }
         }
       }
@@ -59,7 +59,7 @@ class matrix{
       matrix ret(rows,columns);
       for(int i=0;i<rows;i++){
         for(int j=0;j<columns;j++){
-          ret[i][j]=this[i][j]+a[i][j];
+          ret[i][j]=(*this)[i][j]+a[i][j];
         }
       }
       return ret;
@@ -69,7 +69,7 @@ class matrix{
       matrix ret(rows,columns);
       for(int i=0;i<rows;i++){
         for(int j=0;j<columns;j++){
-          ret[i][j]=this[i][j]-a[i][j];
+          ret[i][j]=(*this)[i][j]-a[i][j];
         }
       }
       return ret;
@@ -86,7 +86,26 @@ class matrix{
 		}
 		return ret;
 	}
-	
+	matrix foreach(function<double(const double&,const double&)>f,matrix m){
+		if(rows!=m.rows || columns!=m.columns){
+			// error - size does not match
+		}
+		matrix ret(rows,columns);
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				ret[i][j]=f((*this)[i][j],m[i][j]);
+			}
+		}
+		return ret;
+	}
+	void print(){
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				cout<<(*this)[i][j]<<" ";
+			}
+			cout<<"\n";
+		}
+	}
 };
 
 class network{
@@ -106,6 +125,12 @@ class network{
       }
       layers.push_back(matrix(dim.back(),1));
     }
+
+	void select_random(){
+		for(int i=0;i<depth;i++){
+			w[i].randomize(0,1);
+		}
+	}
     matrix predict(matrix input){
       layers[0]=input;
       for(cur_layer=0;cur_layer<depth-1;cur_layer++){
@@ -140,10 +165,20 @@ class network{
 		return ret;
 	}
 	double cee(matrix a, matrix t){
-		
+		for(int i=0;i<a.rows;i++){
+			if(abs(t[i][0])<=EPSILON) continue;
+			return -log(a[i][0]);
+		}
+		return 1;
 	}
+	
 };
 
 int main() {
-    return 0;
+	network nn({3,10});
+	nn.select_random();
+	nn.predict(matrix(3,1)).print();
+	
+	cout<<"everything is ok.";
+	return 0;
 }
