@@ -10,12 +10,12 @@ double random_number(double s, double e){
   double ret = 0;
   for(int k=0;k<rep;k++){
     ret += rand();
-    srand();
+    srand((unsigned int)time(NULL));
   }
   ret+=rand()*mod/RANDMAX;
-  return ret;
-  
+  return ret;  
 }
+
 class matrix{
   public:
     vector<vector<double>> v;
@@ -55,7 +55,7 @@ class matrix{
       }
       return ret;
     }
-    matrix oeprator + (matrix a){
+    matrix operator + (matrix a){
       matrix ret(rows,columns);
       for(int i=0;i<rows;i++){
         for(int j=0;j<columns;j++){
@@ -65,7 +65,7 @@ class matrix{
       return ret;
     }
 
-    matrix oeprator - (matrix a){
+    matrix operator - (matrix a){
       matrix ret(rows,columns);
       for(int i=0;i<rows;i++){
         for(int j=0;j<columns;j++){
@@ -74,15 +74,21 @@ class matrix{
       }
       return ret;
     }
-    vector<double> to_vector(){
+    vector<vector<double>> to_vector(){
       return v;
     }
+	double max_value(){
+		double ret=-DBL_MAX;
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				ret=max(ret,v[i][j]);
+			}
+		}
+		return ret;
+	}
+	
 };
 
-class layer{
-  public:
-    
-}
 class network{
   int cur_layer;
   public:
@@ -93,7 +99,7 @@ class network{
       depth=1;
     }
     network(vector<int> dim){
-      depth=dim;
+      depth=dim.size();
       for(int i=0;i<dim.size()-1;i++){
         w.push_back(matrix(dim[i],dim[i+1]));
         layers.push_back(matrix(dim[i],1));
@@ -107,8 +113,36 @@ class network{
       }
       return layers.back();
     }
-    
-}
+	double sigmoid(double x){
+		return 1.0/(1+pow(M_E,x));
+	}
+	double relu(double x){
+		return max(0.0, x);
+	}
+	
+	matrix softmax(matrix output){
+		double m=output.max_value()/2.0;
+		double sum = 0;
+		for(int i=0;i<output.columns;i++){
+			sum+=pow(M_E,output[i][0]-m);
+		}
+		for(int i=0;i<output.columns;i++){
+			output[i][0]=pow(M_E,output[i][0]-m)/sum;
+		}
+		return output;
+	}
+	double sse(matrix a, matrix t){
+		double ret=0;
+		for(int i=0;i<a.rows;i++){
+			ret+=a[i][0]+t[i][0];
+		}
+		ret/=2;
+		return ret;
+	}
+	double cee(matrix a, matrix t){
+		
+	}
+};
 
 int main() {
     return 0;
