@@ -16,8 +16,8 @@ class matrix{
     vector<double> operator [] (int idx){
       return v[idx];
     }
-    matrix operator () (matrix a){
-      matrix ret(rows,a.columns);
+    matrix operator * (matrix a){
+      matrix ret(rows,a.columns,0.0);
       for(int i=0;i<rows;i++){
         for(int j=0;j<a.columns;j++){
           for(int k=0;k<columns;k++){
@@ -27,7 +27,26 @@ class matrix{
       }
       return ret;
     }
-}
+    matrix oeprator + (matrix a){
+      matrix ret(rows,columns);
+      for(int i=0;i<rows;i++){
+        for(int j=0;j<columns;j++){
+          ret[i][j]=this[i][j]+a[i][j];
+        }
+      }
+      return ret;
+    }
+
+    matrix oeprator - (matrix a){
+      matrix ret(rows,columns);
+      for(int i=0;i<rows;i++){
+        for(int j=0;j<columns;j++){
+          ret[i][j]=this[i][j]-a[i][j];
+        }
+      }
+      return ret;
+    }
+};
 
 
 int main() {
