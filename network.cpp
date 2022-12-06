@@ -20,7 +20,20 @@ class matrix{
     void randomize(double s, double e){
       const double RANDMAX=32767;
       double r=e-s;
+      double mod = fmod(r,RANDMAX);
       
+      for(int i=0;i<rows;i++){
+        for(int j=0;j<columns;j++){
+          int rep=r/RANDMAX;
+          double value = 0;
+          for(int k=0;k<rep;k+++){
+            value += rand();
+            srand();
+          }
+          value+=rand()*mod/RANDMAX;
+          v[i][j]=value;
+        }
+      }
     }
     matrix operator * (matrix a){
       matrix ret(rows,a.columns,0.0);
