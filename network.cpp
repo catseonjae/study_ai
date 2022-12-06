@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+
 class matrix{
   public:
     vector<vector<double>> v;
@@ -15,6 +16,11 @@ class matrix{
     }
     vector<double> operator [] (int idx){
       return v[idx];
+    }
+    void randomize(double s, double e){
+      const double RANDMAX=32767;
+      double r=e-s;
+      
     }
     matrix operator * (matrix a){
       matrix ret(rows,a.columns,0.0);
@@ -48,7 +54,10 @@ class matrix{
     }
 };
 
-class layer
+class layer{
+  public:
+    
+}
 class network{
   public:
     vector<matrix> w;
