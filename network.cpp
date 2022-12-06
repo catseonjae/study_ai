@@ -65,6 +65,9 @@ class matrix{
       }
       return ret;
     }
+    vector<double> to_vector(){
+      return v;
+    }
 };
 
 class layer{
@@ -72,15 +75,31 @@ class layer{
     
 }
 class network{
+  matrix now;
+  int cur_layer;
   public:
     vector<matrix> w;
-    
+    vector<matrix> layers;
     network(){
       
+    }
+    network(vector<int> dim){
+      for(int i=0;i<dim.size()-1;i++){
+        w.push_back(matrix(dim[i],dim[i+1]));
+        layers.push_back(matrix(dim[i],1));
+      }
+      layers.push_back(matrix(dim.back(),1));
+    }
+    matrix predict(matrix input){
+      cur_layer=0;
+      now=input;
+      
+    }
+    void propagate(){
+      now=
     }
 }
 
 int main() {
-
-      return 0;
+    return 0;
 }
