@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 const double EPSILON=1e-9;
+
 double random_number(double s, double e){
   const double RANDMAX=32767;
   double r=e-s;
@@ -98,6 +99,15 @@ class matrix{
 		}
 		return ret;
 	}
+	matrix pass(function<double(const double&)>f){
+		matrix ret(rows,columns);
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				ret[i][j]=f(v[i][j]);
+			}
+		}
+		return ret;
+	}
 	void print(){
 		for(int i=0;i<rows;i++){
 			for(int j=0;j<columns;j++){
@@ -107,6 +117,43 @@ class matrix{
 		}
 	}
 };
+namespace activation{
+double sigmoid	(double x){
+		return 1.0/(1+pow(M_E,x));
+	}
+	double relu(double x){
+		return max(0.0, x);
+	}
+}
+namespace lose{
+	double sse(matrix a, matrix t){
+		double ret=0;
+		for(int i=0;i<a.rows;i++){
+			ret+=a[i][0]+t[i][0];
+		}
+		ret/=2;
+		return ret;
+	}
+	double cee(matrix a, matrix t){
+		for(int i=0;i<a.rows;i++){
+			if(abs(t[i][0])<=EPSILON) continue;
+			return -log(a[i][0]);
+		}
+		return 1;
+	}
+	
+	matrix softmax(matrix output){
+		double m=output.max_value()/2.0;
+		double sum = 0;
+		for(int i=0;i<output.columns;i++){
+			sum+=pow(M_E,output[i][0]-m);
+		}
+		for(int i=0;i<output.columns;i++){
+			output[i][0]=pow(M_E,output[i][0]-m)/sum;
+		}
+		return output;
+	}
+}
 
 class network{
   int cur_layer;
@@ -134,43 +181,10 @@ class network{
     matrix predict(matrix input){
       layers[0]=input;
       for(cur_layer=0;cur_layer<depth-1;cur_layer++){
-        layers[cur_layer+1] = w[cur_layer] * layers[cur_layer];
+        layers[cur_layer+1] = (w[cur_layer] * layers[cur_layer]).pass(activation::relu);
       }
       return layers.back();
     }
-	double sigmoid(double x){
-		return 1.0/(1+pow(M_E,x));
-	}
-	double relu(double x){
-		return max(0.0, x);
-	}
-	
-	matrix softmax(matrix output){
-		double m=output.max_value()/2.0;
-		double sum = 0;
-		for(int i=0;i<output.columns;i++){
-			sum+=pow(M_E,output[i][0]-m);
-		}
-		for(int i=0;i<output.columns;i++){
-			output[i][0]=pow(M_E,output[i][0]-m)/sum;
-		}
-		return output;
-	}
-	double sse(matrix a, matrix t){
-		double ret=0;
-		for(int i=0;i<a.rows;i++){
-			ret+=a[i][0]+t[i][0];
-		}
-		ret/=2;
-		return ret;
-	}
-	double cee(matrix a, matrix t){
-		for(int i=0;i<a.rows;i++){
-			if(abs(t[i][0])<=EPSILON) continue;
-			return -log(a[i][0]);
-		}
-		return 1;
-	}
 	
 };
 
