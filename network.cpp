@@ -1,11 +1,27 @@
 #include <bits/stdc++.h>
 using namespace std;
-class network{
-    
-};
-int main() {
-    // Write C++ code here
-    std::cout << "Hello world!";
+class matrix{
+  vector<vector<double>> v;
+  public:
+    matrix(){
+        
+    }
+    matrix(int n, int m){
+      v=vector<vector<double>>(n,vector<double>(m));
+    }
+    matrix(int n, int m, int x){
+      v=vector<vector<double>>(n,vector<double>(m,x));
+    }
+    vector<double> operator [] (int idx){
+      return v[idx];
+    }
+    matrix operator () (matrix m){
+      
+    }
+}
 
-    return 0;
+
+int main() {
+
+      return 0;
 }
