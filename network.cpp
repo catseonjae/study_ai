@@ -2,21 +2,22 @@
 using namespace std;
 const double EPSILON=1e-9;
 
-double random_number(double s, double e){
+inline double random_number(double s, double e){
   const double RANDMAX=32767;
   double r=e-s;
-  double mod = fmod(r,RANDMAX);
+  double mod = fmod(r,1);
   
-  int rep=r/RANDMAX;
-  double ret = 0;
-  for(int k=0;k<rep;k++){
-    ret += rand();
+  double ret = s;
+  for(int k=0;k<(int)r;k++){
+    ret += rand()/RANDMAX;
     srand((unsigned int)time(NULL));
   }
   ret+=rand()*mod/RANDMAX;
   return ret;  
 }
-
+inline double random_number(double e){
+  return random_number(0,e);
+}
 class matrix{
   public:
     vector<vector<double>> v;
@@ -25,11 +26,11 @@ class matrix{
     matrix(){
       rows=columns=1;
     }
-    matrix(int n, int m) : rows(n), columns(m){
-      v=vector<vector<double>>(n,vector<double>(m));
+    matrix(int m, int n) : rows(m), columns(n){
+      v=vector<vector<double>>(m,vector<double>(n));
     }
-    matrix(int n, int m, int x) : rows(n), columns(m){
-      v=vector<vector<double>>(n,vector<double>(m,x));
+    matrix(int m, int n, double x) : rows(m), columns(n){
+      v=vector<vector<double>>(m,vector<double>(n,x));
     }
 
     vector<double> operator [] (int idx){
@@ -44,7 +45,9 @@ class matrix{
         }
       }
     }
-
+    void randomize(double e){
+      randomize(0,e);
+    }
     matrix operator * (matrix a){
       matrix ret(rows,a.columns,0.0);
       for(int i=0;i<rows;i++){
@@ -99,7 +102,7 @@ class matrix{
 		}
 		return ret;
 	}
-	matrix pass(function<double(const double&)>f){
+	matrix pass(function<double(const double&)> f){
 		matrix ret(rows,columns);
 		for(int i=0;i<rows;i++){
 			for(int j=0;j<columns;j++){
@@ -117,6 +120,7 @@ class matrix{
 		}
 	}
 };
+
 namespace activation{
 double sigmoid	(double x){
 		return 1.0/(1+pow(M_E,x));
@@ -125,6 +129,7 @@ double sigmoid	(double x){
 		return max(0.0, x);
 	}
 }
+
 namespace lose{
 	double sse(matrix a, matrix t){
 		double ret=0;
@@ -167,32 +172,39 @@ class network{
     network(vector<int> dim){
       depth=dim.size();
       for(int i=0;i<dim.size()-1;i++){
-        w.push_back(matrix(dim[i],dim[i+1]));
+        w.push_back(matrix(dim[i+1],dim[i]));
         layers.push_back(matrix(dim[i],1));
       }
       layers.push_back(matrix(dim.back(),1));
     }
 
-	void select_random(){
-		for(int i=0;i<depth;i++){
-			w[i].randomize(0,1);
-		}
-	}
+	  void select_random(){
+  		for(int i=0;i<depth;i++){
+  			w[i].randomize(1,2);
+  		}
+  	}
     matrix predict(matrix input){
       layers[0]=input;
+        return matrix(1,1);
       for(cur_layer=0;cur_layer<depth-1;cur_layer++){
         layers[cur_layer+1] = (w[cur_layer] * layers[cur_layer]).pass(activation::relu);
       }
       return layers.back();
     }
-	
+    void show_weight(){
+      for(matrix m: w){
+        m.print();
+        cout<<endl<<endl;
+      }
+    }
 };
-
+void end(){
+	cout<<"everything is ok.";
+  exit(0);
+}
 int main() {
 	network nn({3,10});
 	nn.select_random();
-	nn.predict(matrix(3,1)).print();
-	
-	cout<<"everything is ok.";
-	return 0;
+  nn.show_weight();
+	// nn.predict(matrix(3,1).pass(random_number)).print();
 }
